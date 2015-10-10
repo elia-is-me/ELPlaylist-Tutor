@@ -65,7 +65,7 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 
 设置界面调出方式很简单：`右键 > 设置`：
 
-![image](https://raw.githubusercontent.com/elia-is-me/Elplaylist-HowTo/master/images/img-1.png)
+![image](https://raw.githubusercontent.com/elia-is-me/ELPlaylist-Tutor/master/images/img-1.png)
 
 会看到设置界面有**五个**主标签页：`脚本`、`样式`、`分组`、`字段定义`、
 `行为`、`杂项`。ELP 的全部设置都在这五个标签页下面，下面会分别介绍这五个标签页下
@@ -97,7 +97,7 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 
 ###“样式”
 
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-2.png)
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-2.png)
 
 这里是设置界面颜色、外观等的地方。在这里`边缘样式`、`仿真透明`、`滚动条`
 的设置不会被`脚本`设置覆盖，而`背景颜色`、`外观样式`则可能被脚本里的设置
@@ -106,7 +106,7 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 
 给一张设置的效果示意图：
 
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-3.png )
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-3.png )
 
 `自定义背景颜色`下面的左、右填充只对自定义的背景颜色起作用；而`启用外观样
 式`下面的左、右填充则只对外观样式（正在播放和选定的项目会有一个半透明的系
@@ -123,7 +123,7 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 先介绍“分组”的概念：就是将符合同样的条件的歌曲归类在同一组下面，在显示
 的时候显得更加有条理一些。比如：
 
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-4.png)
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-4.png)
 
 这个例子，就是将播放列表的内容按照“艺术家”分组。
 
@@ -144,7 +144,7 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 1. 在这个标签页里，最上面是`新建`、`删除`、`重命名`分组样式，操作方法都是很简
 单的。你可以新建多个分组样式，并分别设置不同的分组样式，这样就可以通过
 `右键：分组按`来切换分组样式了。
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-5.png )
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-5.png )
 
 1. `分组格式`就填上面提到的那些，`排序格式`看情况填。
 
@@ -153,12 +153,12 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 1. `分组行数`：`分组行高 = 分组行数 * 行高`。这里可以是一个固定的数字，比如`4`，
 也可以加一个判断语句：`$if(%el_is_collapsed%,3,4)`, 比如这个例子表示当分组折
 叠起来的时候，分组行高就就变成`3 * 行高`了，如图示：
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-6.png )
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-6.png )
 
 1. `最小分组行数`：设置每一组的最小行数（不是分组标题栏而是下面的歌曲所占的行）
 。在有些时候会比较有用，比如如果你在侧面显示专辑封面，如果这一组歌曲太少的话
 可能封面就显示不全，但设置了最小行数的话就可以保证有足够的空间给你放专辑封面。
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-7.png )
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-7.png )
 
 1. `播放列表过滤`：可以针对特定的播放列表，自动判断是否分组，使用哪一个分组，
 功能挺强大，不过细节并不完美，因为比较高级所以就不介绍了。可以自己试一试。
@@ -180,7 +180,7 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 
 字段可以是数字、字符串甚至是 tf 函数。
 
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-8.png)
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-8.png)
 
 ###“行为”
 
@@ -205,9 +205,9 @@ fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 
 `附加排序格式到上下文菜单` 可以自己设置`右键：排序`菜单下面的子菜单项。
 
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-9.png)
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-9.png)
 
-![image](https://raw.github.com/elia-is-me/Elplaylist-HowTo/master/images/img-10.png)
+![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-10.png)
 
 ## 结语
 
@@ -249,7 +249,7 @@ Elp 自带的字段和函数都没有介绍，虽然文档中有，但在这篇�
 
 ##参考资料
 1. Elp 文档 翻译 by neon):
-  https://raw.githubusercontent.com/elia-is-me/Elplaylist-HowTo/master/text-files/elp_chs.txt
+  https://raw.githubusercontent.com/elia-is-me/ELPlaylist-Tutor/master/text-files/elp_chs.txt
 1. Wiki: [Foobar2000:Components 0.9/ELplaylist panel (foo uie elplaylist)](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components_0.9/ELplaylist_panel_%28foo_uie_elplaylist%29#.25el_height.25)
 1. Shutter by Jensen & dreamxis: [dreamxis 的博客地址](http://dreamxis.themex.net/709)
 
