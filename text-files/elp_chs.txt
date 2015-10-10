@@ -1,0 +1,1573 @@
+﻿foo_uie_elplaylist.dll v0.6.9.0 beta
+for foobar2000 v1.0+, Columns UI0.3+, Windows Vista+ 
+(動作確認はWindows Vistaのみ)
+
+SDK version
+foobar2000:2009-05-21
+       cui:6.3
+
+
+用于Columns UI（CUI） 的类似单栏播放列表（SCPL,Single Column Playlist）的播放列表视图查看器（Playlist view）
+对于播放列表中的使用分组格式化规则设定分类而成的“组”以列表形式进行显示。
+
+当想要改变设定的时候，在视图中单击右键，在选择Settings...后弹出的对话框中进行设置。
+在设置编辑的过程中，必须具备Titleformat(TF，标题格式化)的知识。关于Titleformat的详细规则语法请参考其他的网站。
+
+
+
+●设置项目
+
+[ script][脚本]
+针对列表中每一行内部的绘制进行自定义。
+	title format script presets: 记录控制绘图的TF，可以保存多个设定。
+		Track list
+			控制音轨行图形显示的TF。
+		Group header
+			控制分组标题行图形显示的TF。
+		Per Second
+			控制当前播放中音轨行，每秒更新图形显示的TF。(可以使用Now playing info系的TF。)
+		Popup(Background)
+			控制弹出式窗口背景图形显示的TF。会在Popup(Track)之前被执行。
+			可能不能使用扩展域。
+		Popup(Track)
+			控制弹出式窗口以音轨为单位的图形显示的TF。假如是分组标题行的弹窗则会针对分组内部的每条音轨进行执行。
+			可能不能使用扩展域。
+			弹出式窗口的起始点请使用%el_is_group%来判断是属于音轨行还是分组标题行。
+			同时，在分组标题中，请使用%el_item_index%来给绘图位置定位。
+				[注意]:	从不带有Popup功能的版本升级到带有该功能的版本后，
+					设定窗口开启后Popup的默认Titleformat会被复位到空无一物，这是规定。
+					假如以这个状态保存设置的话，Popup不会显示任何东西。
+					Popup的功能请参考Graphical Browser（GB，图形查看器）。假如有问题，请告诉咱。
+
+
+[style][样式]
+	custom background colour :
+		设置自定义背景色。
+		total : 设置整体的背景色。
+		odd item  : 设置奇数行背景色。
+		even item : 设置偶数行背景色。
+		selected item :设置选中行背景色。
+		playing item  :设置正在播放项目的背景色。
+		selected playing item :选中同时正在播放项目的背景色。
+
+		通过设置odd和even item以及left padding和right padding可以规定绘图范围。
+
+		odd and even are calculated by the list index:
+			设置为on，依据整个列表内的行序号决定奇数/偶数。
+			设置为off，依据其所在的分组内部的行序号决定。
+
+		※对于其中显示文字的改变，只能够通过解析script（脚本）中的TF代码实现。
+
+	default font... :
+		设置默认字体。
+
+	pseudo transparent    :
+		进行背景伪透明处理。处理负担较重。
+		(当处理负担较大时，显示范围可能会变窄或是出现白边也说不定。
+		 因为作者不使用这一功能，所以也就不打算把它完善…)
+
+	Enable Visual Style : 
+		利用视觉样式VisualStyle等对各行的背景进行自动绘制。主要是面向Windows Vista的功能。
+		这一功能会在custom background colour执行之后，title format script解析之前进行绘制。
+		字体的颜色不能自动机改变。
+
+	scrollbar :
+		设置滚动条的显示状态：default(自动对显示隐藏进行切换)/hide(总是隐藏)/show(总是显示)、
+		同时可以设置滚动量(0是系统的默认值)。
+
+[ grouping ][分组]
+主要是有关于分组的自定义，包含多行的列表也同时可以进行自定义。
+
+	group by:可以在此处保存多个预设preset。
+		group format :
+			记录了对每一个音轨进行分组处理的Titleformat。
+			根据对这里的内容作为TF进行解析的结果，会依次将列表中的音轨进行分组。
+			即使group format的结果相同，播放列表中被分开的音轨也会被分在不同的组中。
+			根据group forma中利用"|||"分割的部分，可以设置多层分组。
+
+			例: %album artist%|||%album%
+			在带有子分组的分组中，不能存在没有分组的音轨，这是一条规则。
+			对于这些音轨的分组，会启用假设组标题将它们分在一起。
+			在文本的最后由稍微详细些的说明。
+
+		sort format:
+			记录了为了将播放列表内容进行分类（sort）的Titleformat。
+			对于执行分类排序操作，要从上下文菜单中选择sort进行执行。
+			[注意] 分类排序sort操作不会自动执行。
+			       
+
+		row height :
+			设置列表中每一行的基本高度。
+
+
+		row number of group header:
+			以"row height"为单位1设置分组标题的高度。
+			Titleformat此处有效。不过TF处理的结果必须返回值在(0～16)之间的数字。
+			因此，分组标题的高一定是row height的整数倍(0～16倍)。
+			[注意]：使用在分组内部的音轨中的话，会计算group row的值。
+
+		minimum row number of group:
+			设置每一分组内部最少行数。
+			例如，当分组内部的音轨数较少时，为了确保能够留出足够的空间来绘制封面图片等情况下可以使用。
+			Titleformat此处有效。不过TF处理的结果必须返回值大于0的数字。
+			根据分组结果，组内音轨数未达到设个设定值的情况下，会通过插入empty行增加空间。			
+
+			[注意] 使用在分组内部的音轨中的话，会计算min item num的值。
+			       在empty行中，因为Track list Titleformat中$enabledraw()受限制默认不能使用，绘图功能因此是关闭的。
+			       假如想要在其他有效行绘图的话，请使用$enabledraw(1)等函数使得绘图功能处于强制打开状态。
+			       empty行的Track list Titleformat是根据同组最后有效音轨的内容进行评定计算的。
+		playlist filter :
+			enable playlist filter设定为on的时候，当播放列表更换的时候会根据列表名称自动设置group by preset项目。
+
+				enable all playlists	preset（预设）对全体播放列表有效。
+				enable only on	与设定的播放列表名一致的时候preset有效。
+				disable on		与设定的播放列表名一致的时候preset无效。
+				根据preset列表中的顺序决定使用优先度。
+
+				※ 设定播放列表名称的时候，可以通过使用";"进行分隔从而设定多个值。TF和通配符无效（从0.6.8.1a开始可以使用通配符【未测试】）。
+
+		associated titleformat script name : 
+			可以设定一个想要与preset进行关联设定的tileformat scrpit的名称。
+
+
+	enable playlist filter :
+		开放playlist filter功能		根据播放列表名称自动设置group by preset。
+
+	prioritize active preset :
+		在今后检索有效的preset时，立刻选定使用当前的group by preset并将其作为最优先预设。
+
+[field definition]
+	title format preprocessor :
+		在对各 Titleformat[Track list] [Group header] [Per Second] [Popup(Background)] [Popup(Track)] [row number of group header] [minimum row number of group]
+		进行评估计算之前，会对field进行替换操作。
+		可以在各Titleformat中被引用，看来挺方便的。
+		如同 foo  :  C:\%album%.jpg  这样设置之后，
+		各 Titleformat的  %foo% 就会被换成 C:\%album%.jpg 。
+
+[ behaviour ]
+	click action :
+		改变在列表上鼠标点击动作的效果。
+
+	mouse hover action :
+		设定鼠标悬停时执行的命令。
+
+	enable hover :
+		mouse hover action设定on/off开关。
+
+	delay :
+		从鼠标停止移动到mouse hover action执行之间的时间延迟。
+
+	display only the focused group :
+		仅显示焦点分组。前提是要有其他的播放列表内容显示面板(Graphical Browser之类的)进行协作。
+
+	collapse all groups when playlist is changed :
+		默认为收起分组。
+	threshold of number of groups :
+		当分组数目超过这个数值之后收起分组。
+	auto-collapse :
+		非焦点分组以外的组自动收起。
+		不过即使当这个选项设为on，在分组标题上单击依然可以改变音轨行的显示状态。
+		再点击一次的话展开的分组又会自动收起。
+		想要跟随播放项目的时候，请与Playback/Cursor Follows Playback组合使用。
+
+	allow collapsing group with no group header :
+		强制没有分组标题的(group row为0)组也能够收起。
+
+	disable focus change by single click at group header
+		禁止当鼠标在分组标题以及empty行上单击时改变焦点位置。
+
+	update every second :
+		设定播放项目的Per Second是否有效。更正确一些说，是否允许每秒刷新。
+
+	move items with drag and dop :
+		选中的音轨是否可以通过拖拽进行移动。
+		即使这一项设为off，按住[Alt]键再进行拖拽一样可以移动音轨。
+
+	enable incremental search :
+		根据按键输入内容，对group format(%el_group_format%)进行递归检索。
+		检索的关键字会在状态栏中显示出来。
+		同时，在5秒钟 之内没有输入有效按键的话，检索的关键字会自动被复位清除。
+		可以使用相关快捷键(shortcut key bind见后面的说明)。
+		在XP中使用IME(输入法)的话，应该可以检索日语。[中文当然就也可以了]
+		但是在Vista中，或许只能检索字母表(ASCII码表)。(现在还没有在Vista下确认自动作的可行性。)
+		在Vista下想要检索ASCII码表编码内容之外的字符时，按下Ctrl+F可以呼出对话框，其中可以使用非ASCII字符，所以请使用这样的解决办法。
+	
+	resize quality :
+		可以设置图片的扩大/缩小品质。
+		总之如果想要提高图片质量的话，HighQualityBicubic似乎是个不错的选择。
+
+	context menu :
+		对于在上下文菜单（右键菜单）中项目的显示/隐藏进行设定。
+
+
+[misc]
+	popup
+	根据mouse hover action执行的弹出窗口行为设定。
+		max size :
+			弹出窗口的最大尺寸。可以使用少量的Titleformat。
+
+		popup opacity :
+			弹出窗口的不透明度。设为0就相当于完全透明，因此会自动设定为不显示弹出窗。
+
+		fade-in :
+			在显示时添加淡入效果。适当的设定一下。(假如是Vista的话默认就是淡入？)
+
+		enable colorkey :
+			设置colorkey。设定的颜色会被透过。假如与背景色相同（默认）的话就是背景透明。
+			但是，如果带有反锯齿选项的话，不能很漂亮的透明。
+
+		prevent going outside of display
+			当弹出窗口超过设定的显示器范围的时候禁止显示。不能对应多个显示器的情况。
+		
+		max track num:
+			执行Popup(Track)代码的音轨数上限。
+			弹出窗口的Titleformat script依照
+			Popup(Background) -> Popup(Track) -> Popup(Track) -> Popup(Track) -> Popup(Track) -> ………
+			的顺序执行。
+
+	additional sort format
+		设置要添加在上下文菜单中sort项目下的sort format[分类格式化]。
+		与group by preset是独立的设置。
+
+
+●快捷键参考指南
+	Ctrl-c : Copy[复制]
+	Ctrl-v : Paste[粘贴]
+	Ctrl-x : Cut[剪切]
+	Ctrl-a : Select All[全选]
+	Ctrl-f : 呼出检索对话框(可以进行%el_group_format%中内容的检索)
+	Ctrl-g : 跳到下个分组
+	Ctrl-b : 跳到前一个分组
+	Delete : 从播放列表中删除选中的音轨
+	Alt-[Up]/[Down] : 移动选中的音轨  (当"hide all items when playlist is changed" 设为 off时)
+	[注意]: 依然是foobar2000主体中General->Keyboard Shortcuts中的设定为最优先执行。
+
+	##使用[Alt] + Drag & Drop [鼠标拖拽]可以在任何情况下移动选中的音轨。
+
+	■关于递归检索的补充
+	通过键盘输入可以实现对group format(%el_group_format%)的递归检索。(仅限于enable incremental search设定为on的时候)
+	同时，以下的快捷键全部有效。
+	Ctrl-e : 复位重置检索的关键字。
+	Ctrl-d : 下一个结果。(虽说用Ctrl-s更好，但是人家已经名键有主…)
+	Ctrl-r : 上一个结果。
+
+●主菜单
+	对全部的ELPlaylist面板产生影响。
+	Show now playing	:定位到当前正在播放音轨。
+	Show focused item	:定位到当前选中的音轨。
+	Expand all groups	:展开所有的组。
+	Collapse all groups	:收起所有的组。
+	Refresh		:明确要求进行画面刷新。
+
+
+●扩展指令参考指南
+(除了写在这里的命令之外，foobar自带的默认TF也大部分可以使用)
+
+
+■■■■■■ fields[域] ■■■■■■
+%域名称%
+	值说明
+	[...][...][...][...]有效范围
+
+
+%el_width%
+	返回每一行显示范围的宽
+	[Track list] [Group header] [Per Second] [Popup]
+
+
+%el_height%
+	返回每一行显示范围的高
+	( 分组标题行的%el_height% = %el_group_row% * %el_row_height%
+	  音轨行的%el_height% = %el_row_height% )
+	受到$setworldtransform()的影响。
+	[Track list] [Group header] [Per Second] [Popup]
+
+
+%el_isplaying%
+	是否是播放中
+	[Track list] [Group header] [Per Second]
+
+
+%el_selected%
+	是否是播放列表中的选中曲目
+	[Track list] [Per Second]
+	是否是以click action的Select group选中的组
+	[Group header] 
+
+
+%el_focused%
+	是否是播放列表中的焦点曲目
+	[Track list] [Per Second]
+
+
+%el_row_height%
+	返回每行的基本高。
+	(在分组标题行的结果与%el_height%不同。)
+	[Track list] [Group header] [Per Second]
+
+
+%el_group_row%
+	分组标题行的高度是%el_row_height%的几倍。
+	分组标题行中存在%el_height% = %el_group_row% * %el_row_height%的数学关系
+	[Track list] [Group header] [Per Second]
+
+
+%el_item_count%
+	分组内部的音轨个数
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+	[Popup]
+
+
+%el_item_count2%
+	算上empty行，分组内部的音轨个数
+	    [Track list] [Group header] [Per Second]
+	使用了Popup的音轨数
+	    [Popup]
+
+
+%el_direct_item_count%
+	直接属于当前分组的音轨个数。
+	除了特殊情况下，拥有子分组的分组的这个值一般是0。
+	同时，没有子分组的分组中就会换成%el_direct_item_count% = %el_item_count%（应该是…………）。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+%el_total_item_count%
+	播放列表内的总音轨数
+	[Track list] [Group header] [Per Second] [Popup]
+
+%el_item_index%
+	分组内部音轨的索引编号(从0开始数)
+	不会算上empty行。
+	[Track list] [Per Second] [Popup]
+
+
+%el_item_index2%
+	分组内部音轨的索引编号(从0开始数)
+	算上empty行。
+	[Track list] [Per Second]
+
+
+%el_total_group_count%
+	分组个数（也就是总共的分组标题个数）
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_total_group_index%
+	分组的索引编号（也就是列表上分组标题的索引编号）
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_count%
+	同属相同父级分组的分组个数
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_index%
+	当父分组可见时分组的索引编号（从0算起）
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_depth%
+	现在分组的深度（分组级数，从0算起）
+	[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]
+
+
+%el_subgroup_count%
+	子分组个数
+	这个是“子”分组的个数，孙、曾孙分组（子分组的子分组）不会算上。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_subgroup_count2%
+	累计全部的子分组个数
+	所有分组（子分组及其下属）都算上。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_format%
+	返回对当前分组执行group format的TF处理结果。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+%el_group_first_path%
+	返回当前分组第一个音轨的路径。
+	主要是面向$imageabs的功能。
+	[Track list] [Group header] [Per Second] 
+
+
+%el_is_collapsed% (%el_is_hide_item%)
+	分组是否收起。
+	（分组是否只显示分组标题）
+	[Group header] [Group row] 
+
+
+%el_is_empty%
+	是否是empty行。
+	(单纯是%el_is_valid%的相反值)
+	    [Track list] [Per Second]
+	不能很好的进行子分组构造时，是否加入了以dummy行出现的分组标题。
+	    [Group header] [Group row] [Min item num]
+
+
+%el_is_valid%
+	是否是有效行（非empty行）。
+	[Track list] [Per Second]
+	[Group header] [Group row] [Min item num]
+
+
+%el_is_noheader%
+	是否有分组标题
+	(%el_group_row%等于0时本值为1)
+	[Track list] [Per Second]
+
+
+%el_sum_length%
+	分组中所有音轨时长合计 [hh:]mm:ss 形式
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_sum_length_seconds%
+	分组中所有音轨时长合计（秒）
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_backcolour%
+	以r-g-b形式返回背景色的值。
+	想要组成r-g-b-a形式的话，
+	可以像%el_backcolour%-192 之类的样子添加alpha值。
+	[Track list] [Group header] [Per Second]
+
+
+%el_preset_index%
+	返回当前group by中preset的索引编号。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_preset_name%
+	返回当前group by中preset的名称。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_is_group%
+	弹出窗口是否在分组标题部分被激活。
+	[Popup]
+
+
+%el_popup_width%, %el_popup_height%
+	瞬时的弹出窗口尺寸。
+	要注意的是，%el_width%，%el_height%返回的是max size，与这两个值有不同
+	[Popup]
+
+
+%el_is_themed%
+	enable Visual Style是否有效
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_foobar2000_path%
+	返回包含foobar2000可执行文件的文件夹路径。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+	
+
+%el_user_profile_path%
+	返回用户档案文件夹的路径。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]
+
+
+%el_system_date%
+	返回foobar2000启动、或者是播放列表切换时的系统时刻。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]
+
+
+%el_ui_themed%
+	ColumnsUI -> Colours and Fonts-> Colours 中的 ELPlaylist 的 Mode是否是Themed
+	分栏用户界面→颜色与字体→颜色设置 中ELPlaylist 的 模式 是否为 跟随系统主题
+	[Track list] [Group header] [Per Second] 
+
+%el_ui_colour_text%
+	ColumnsUI -> Colours and Fonts-> Colours 中的 ELPlaylist 的 item : foreground 的设定值
+	分栏用户界面→颜色与字体→颜色设置 中ELPlaylist 的 项目：前景色 的设定值
+	[Track list] [Group header] [Per Second] 
+
+%el_ui_colour_selection_text%
+	ColumnsUI -> Colours and Fonts-> Colours 中的 ELPlaylist 的 selection item : foreground 的设定值
+	分栏用户界面→颜色与字体→颜色设置 中ELPlaylist 的 选中项目：前景色 的设定值
+	[Track list] [Group header] [Per Second] 
+
+%el_ui_colour_inactive_selection_text%
+	ColumnsUI -> Colours and Fonts-> Colours 中的 ELPlaylist 的 inactive selection item : foreground 的设定值
+	分栏用户界面→颜色与字体→颜色设置 中ELPlaylist 的 非活动的选中项目：前景色 的设定值
+	[Track list] [Group header] [Per Second] 
+
+%el_ui_colour_background%
+	ColumnsUI -> Colours and Fonts-> Colours 中的 ELPlaylist 的 item : backround 的设定值
+	分栏用户界面→颜色与字体→颜色设置 中ELPlaylist 的 项目：背景色 的设定值
+	[Track list] [Group header] [Per Second] 
+
+%el_ui_colour_selection_background%
+	ColumnsUI -> Colours and Fonts-> Colours 中的 ELPlaylist 的 selection item : backround 的设定值
+	分栏用户界面→颜色与字体→颜色设置 中ELPlaylist 的 选中项目：背景色 的设定值
+	[Track list] [Group header] [Per Second] 
+
+%el_ui_colour_inactive_selection_background%
+	ColumnsUI -> Colours and Fonts-> Colours 中的 ELPlaylist 的 inactive selection item : backround 的设定值
+	分栏用户界面→颜色与字体→颜色设置 中ELPlaylist 的 非活动的选中项目：背景色 的设定值
+	[Track list] [Group header] [Per Second] 
+
+%el_ui_font_name%
+	ColumnsUI -> Colours and Fonts-> Fonts 中的 ELPlaylist 的 Font名
+	分栏用户界面→颜色与字体→字体设置 中ELPlaylist 的 字体名称
+	[Track list] [Group header] [Per Second] 
+
+
+■■■■■■ functions ■■■■■■
+
+●控制绘图函数
+	在[Track list], [Group header], [Per Second], [Popup]中有效。
+
+$font(name,size,OPTIONS)
+	设置字体。
+	name - 字体名,
+	size - 字体大小
+	OPTIONS - 样式。可以将下列选项进行组合。
+		bold italic underline strikeout
+
+	例: $font(Tahoma,10,bold italic)
+
+$drawstring(text,x,y,w,h,color,OPTIONS [,OPTIONS2])
+
+	绘制字符串的函数,将text在(x,y)坐标处绘出。
+
+	●特别说明
+	=除了这个函数和drawtext及drawtextex之外无法显示字符串。
+	=可能无法使用TrueType(TTF)以外的字体。
+	text - 要绘制的字符串
+	x - 水平坐标
+	y - 垂直坐标
+	w - 描绘区域的宽
+	h - 描绘区域的高
+	color - 请将颜色以 r-g-b-a的形式指定
+	OPTIONS - 设定对齐样式、绘制质量、裁切方式。
+		left hcenter right    -  指定水平方向的对齐
+
+		top  vcenter bottom   -  指定垂直方向的对齐
+
+		nowrap                -  不进行文字的缩进换行
+
+ 		noaa                  -  ClearType和反锯齿效果无效化。
+		aa                    -  设置反锯齿模式。即使是不能设定使用ClearType进行灰阶渲染的字体也可设置反锯齿。
+		hq                    -  以最佳质量绘图的模式。ClearType模式。(默认设置为此)
+
+
+		trimchar  trimword    -  对无法显示在指定范围内的字符进行裁切设定。
+		elipchar  elipword    -  对无法显示在指定范围内的字符结尾处的...进行设定。
+
+		mempos                -  设置之后，使用$getlastpos可以取得绘图的各个坐标。
+
+
+	OPTIONS2 - 对于辉光效果的条件进行设定。(试验选项, experimental option)
+
+		glow - glow效果设置
+			指定形式 glow:expand:colour[:strength]
+				expand - [0-5]
+				colour - r-g-b
+				strength - [0-3]   
+
+		offset - 设置glow效果的偏移量
+			指定形式 offset:x:y
+				x  - glow水平方向的偏移量
+				y  - glow垂直方向的偏移量
+
+		=glow辉光处理的系统负担高。(尤其是还同时有pseudo transparent选中。)
+
+
+	例  $drawstring(abcd,10,10,,,255-128-64-128,)
+	    $drawstring(abcd,10,10,,,255-128-64-128,left vcenter,glow:2:255-255-255:3)
+	    $drawstring(wxyz,10,10,,,255-255-255,,glow:2:32-168-268:1 offset:1:1)
+	    $drawstring(wxyz,10,10,,,255-255-255,elipchar)
+
+
+$drawrect(x,y,w,h,colour1,colour2,OPTIONS)
+	绘制矩形的函数。
+	绘制起点为坐标(x,y)尺寸为(w,h)的矩形。
+
+	colour1 - 内部填充色 r-g-b-a形式
+	colour2 - 边框的颜色 r-g-b-a形式
+
+	OPTIONS - 样式
+		aa - 添加反锯齿设定
+
+
+	例  $drawrect(0,50,50,50,255-128-64-128,,aa)
+
+
+$gradientrect(x,y,w,h,colour1,colour2,OPTIONS,peakpoint)
+	绘制矩形并对其进行渐变填充。
+	绘制起点为坐标(x,y)尺寸为(w,h)的矩形。
+	
+	colour1 - 渐变开始的颜色
+	colour2 - 渐变结束的颜色
+
+	OPTIONS
+		vertical    垂直方向渐变。
+		horizontal  水平方向渐变。
+		aa          添加反锯齿设定。
+		nonlinear   非线性渐变。
+
+	peakpoint: 0-100
+		改变渐变的终点位置。
+		设为默认值0时，colour1 --> colour2 的形式进行变化。
+		而设为50时，则是以colour1 --> colour2 --> colour1的形式进行变化。
+
+	例: $gradientrect(0,50,50,50,255-128-64-128,255-255-255,vertical aa)
+	    $gradientrect(0,50,50,50,255-128-64-128,255-255-255,,10)
+
+
+$drawblurrect(x,y,w,h,colour,level)
+	绘制边缘模糊处理并且内部填充的矩形。
+	level - 模糊度[1..7]
+
+
+$drawfocusrect(x,y,w,h)
+	将指定的矩形以焦点的点线样式边缘进行绘制。
+
+
+$drawthemerect(x,y,w,h,control_name,partId,stateId)
+	使用当前视觉样式（VisualStyle）在矩形内绘制控件（按钮，进度条什么的）的函数。
+	因为只能绘制图片(==b)，所以说实用性很低的说。
+
+	●特别注意
+	=绘制不出在当前视觉样式（VisualStyle）中没有定义的，不存在的控件。
+	=肯定必须是WindowXP以上才行咯。
+
+	control  : 设定想要绘制的控件种类的名称。以下列出。[Neon菌的糟糕译注：英语咱就不烦了哈]
+		window button rebar toolbar status listview header progress tab trackbar tooltip treeview spin scrollbar
+		edit combobox taskbar taskband startpanel explorerbar
+
+	partId: 想要绘制的控件部分的ID。以数值设定。
+		能看见的控件部分基本上是属于以下范围的数值，这些东西的使用可能性较高。
+		window: 1-37
+		button rebar listview tooltip: 1-5
+		toolbar: 1-6
+		status treeview taskband: 1-3
+		header spin: 1-4
+		progress: 1-4
+		tab trackbar scrollbar:1-10
+		edit: 1-2
+		combobox: 1
+		taskbar: 1-8
+		startpanel: 1-11
+		explorerbar: 1-12
+
+	stateId: 表示部件的状态（选中状态什么的）的ID。 没有状态变化的部件的情况下请设定为0。
+	         假如stateId设为0或1或2都画不出来的话，就是那个部分没定义。
+
+
+	例: 
+        假如是Vista系统的话，可以绘出资源管理器的样式。
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,1) //default
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,2) //hot
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,3) //selected
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,4) //disable
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,5) //notfocused selected
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,6) //hot selected
+            $drawthemerect(0,0,%el_width%,1,listview,7,0)           //group header line
+
+$drawroundrect(x,y,w,h,w2,h2,colour1,colour2,RESERVED)
+	绘制圆角矩形。
+	绘制起点为坐标(x,y)尺寸为(w,h)的圆角矩形。
+
+	●特别注意
+	必须满足w > 4 * w2 && h > 4 * h2 を満たす必要がある。
+
+	w2 - 圆角的宽
+	h2 - 圆角的高
+	colour1  内部填充色
+	colour2  边框色
+
+	例  $drawroundrect(10,20,50,50,4,4,255-255-128-255,,)
+
+
+
+
+$drawellipse(x,y,w,h,colour1,colour2,RESERVED)
+	绘制椭圆的函数。
+	绘制起点为坐标(x,y)尺寸为(w,h)的椭圆。
+
+
+$drawtriangle(x1,y1,x2,y2,x3,y3,colour1,colour2,OPTIONS)
+	绘制以(x1,y1),(x2,y2),(x3,y3)作为定点的三角形。
+
+	OPTIONS
+		aa - 反锯齿设定
+
+	例: $drawtriangle(10,5,20,10,10,15,200-100-100,,aa)
+
+
+$imageabs(x,y,w,h,path,OPTIONS,n,alpha,OPTIONS2)
+	在坐标(x,y)处以尺寸(w,h)绘制由path指定的图片。
+	假如图片存在返回true，否则返回false。
+
+	dipsplays the image specified by path.
+	after the image is resized, it is cached on the memory. 
+
+	●特别注意
+	调整尺寸，缩放之后的图片会缓存在内存上，下次继续引用的时候处理效率会提升。
+	没有被再次引用的图片，会从内存上清除。
+	假如省略w,h，那么图片将以原本尺寸显示并缓存。
+	(但是即使w,h，在内存上缓存的图片的尺寸也是原本图片的尺寸)
+
+	想要进行多次缩小的情况下，
+	缩小后再放大画质就会变~糟~糕~。
+	假如好好利用nodisplay和noexpansion之类的设置，
+	因为会选出缩小率中缩的最不小的一个数值进行缓存，所以效果还不错。
+
+	path - 图片的绝对路径 (或 内嵌图片的音频文件路径)
+
+	OPTIONS
+		<appearance>
+		nokeepaspect - 不保持宽高比(不能和除去nodisplay,archive,icon之外的选项一起设定)。
+		nodisplay    - 仅读入内存，不显示。
+		noexpansion  - 只缩小不放大。
+
+		<align>	- 同项互斥设定。
+		left right  - 水平对齐。
+		top bottom  - 垂直对齐。
+
+		<misc>
+		wc           使得通配符(*,?)有效。但是如果在read engine中设定了内容的话这一项就无用了。
+		delay        当别处有线程在读入图片的时候按先来后到的原则读取图片。当有大量图片需要处理时推荐这个选项。
+		nodelay      无视其他线程，读入图片。
+
+
+		<read engine>同项互斥设定。
+		archive     - 经过archive reader读取路径中的图片。
+		              path的写法要依赖于archive reader，压缩包的绝对路径|压缩包内文件路径 是基本写法。
+		              例:  C:\aaa\image.zip|bbb/ccc.jpg
+		icon        - 显示path指向的icon图标文件(*.ico)。
+
+		artreader   - 利用foobar2000的core的artwork reader读入path指向的音频文件中的嵌入图片。
+		              假如没有内嵌图片，会读入音频文件的文件夹图片。但是这一行为速度很低。
+		artreader_front  - 读入封面。
+		artreader_back   - 封底。
+		artreader_disc   - 盘面。
+		artreader_icon   - 图标。
+		artreader_artist - 艺术家。
+		(artreader*** are currently disrecommended options because these option seem to be slow)
+		（artreader*** 的这些选项现在不推荐因为似乎他们的效率好低…………）
+
+		* 注意 *
+		如果你使用artreader 和 artreader_*** 选项，你必须使用 %el_group_first_path% 来读取"path"参数。（从FB2K v1.0开始的规定）
+			
+
+	n - 为进行rotateflip（反转旋转）而设置的索引编号
+		1: 90
+		2: 180
+		3: 270
+		4: 左右反转 
+		5: 90 + 左右反转 
+		6: 上下反转
+		7: 90 + 上下反转 
+
+	alpha - 不透明度 [0..255] (0为完全透明)
+
+
+	OPTIONS2 - shadow effect (参考$drawstring的glow辉光效果)
+		glow:expand:colour
+		offset:x:y
+
+
+    例  $imageabs(10,10,50,50,C:\%album%.jpg)
+        $imageabs(10,10,50,50,C:\%album%.jpg,left top)
+        $imageabs(10,10,50,50,C:\%album%.jpg,,6)
+        $imageabs(10,10,50,50,C:\%album%.*,wc,6)
+        $imageabs(10,10,50,50,C:\%album%.jpg,bottom nodelay,,128)
+        $imageabs(10,10,50,50,C:\%album%.jpg,bottom,,,glow:2:0-0-0 offset:4:4)
+        $imageabs(10,10,50,50,%el_group_first_path%,artreader_front)
+
+
+$imageabs_rc(rw,rh,srcx,srcy,srcw,srch,x,y,path,OPTIONS,n,alpha,OPTIONS2)
+	显示缩放，裁切之后的图片。
+	path 指向的图片以尺寸(rw,rh)进行缩放之后，
+	那一部分区域(srcx,srcy,srcw,srch)以坐标(x,y)用尺寸(srcw,srch)显示出来。
+
+	在内存中是以(rw,rh)为尺寸进行缓存的。
+	假如在TF解析完成后(rw,rh)发生了变化，会再次读入图片。
+	因此，rw,rh应输入固定值。
+
+	假如图片存在返回true，否则返回false。
+
+	OPTIONS 参考imageabs同学
+
+	例:
+	 $imageabs_rc(200,100,0,0,100,50,10,10,C:\%album%.jpg,,6,192)
+	 $imageabs_rc(200,100,0,0,200,100,10,10,C:\%album%.jpg,,)  ( = $imageabs(10,10,200,100,C:\%album%.jpg,left top,,) )
+	 $imageabs_rc(150,120,0,0,150,120,20,15,C:\%album%.jpg,hcenter vcenter,)  ( = $imageabs(20,15,150,120,C:\%album%.jpg,,,) )
+
+*啊，EL同学没有drawimage这物体~注意咯
+
+$albumart(x,y,w,h,target,OPTIONS,n,alpha,OPTIONS2)
+	专用于foobar2000 core api的图片显示函数。
+	
+	在坐标(x,y)处以尺寸(w,h)绘制由target指向的图片。
+	调整尺寸，缩放之后的图片会缓存在内存上，下次继续引用的时候处理效率会提升。
+	没有被再次引用的图片，会从内存上清除。
+	假如省略w,h，那么图片将以原本尺寸显示并缓存。
+	(但是即使w,h，在内存上缓存的图片的尺寸也是原本图片的尺寸)
+
+	想要进行多次缩小的情况下，
+	缩小后再放大画质就会变~糟~糕~。
+	假如好好利用nodisplay和noexpansion之类的设置，
+	因为会选出缩小率中缩的最不小的一个数值进行缓存，所以效果还不错。
+
+	假如图片存在返回true，否则返回false。
+
+
+	Dipsplays the image specified by foobar2000 core API.
+	After the image is resized, it is cached on the memory. 
+
+
+
+	target: 	0  显示当前分组第一个音轨的专辑封面
+		1  显示当前音轨的专辑封面
+
+		强烈推荐设置target=0。
+		请小心使用target=1。（这一问题在0.6.8.2b中似乎已经修正。但仍无法确定稳定性。）
+
+	OPTIONS
+		[appearance]
+		nokeepaspect - 不保持宽高比(不能和除去nodisplay,archive,icon之外的选项一起设定)。
+		nodisplay    - 仅读入内存，不显示。
+		noexpansion  - 只缩小不放大。
+
+		[align]	- 同项互斥设定。
+		left right  - 水平对齐。
+		top bottom  - 垂直对齐。
+
+		[source type]	- 同项互斥设定。
+		front - 封面
+		back - 封底
+		disc - 盘面
+		icon - 图标
+		artist - 艺术家
+
+
+	n - 为进行rotateflip（反转旋转）而设置的索引编号
+		1: 90
+		2: 180
+		3: 270
+		4: 左右反转 
+		5: 90 + 左右反转 
+		6: 上下反转
+		7: 90 + 上下反转 
+
+	alpha - 不透明度 [0..255] (0为完全透明)
+
+
+	OPTIONS2 - shadow effect 阴影与辉光效果(参考$drawstring的glow辉光效果)
+		glow:expand:colour
+		offset:x:y
+
+
+
+    例  $albumart(10,10,50,50,0)
+        $albumart(10,10,50,50,0,left top)
+        $albumart(10,10,50,50,0,front,6)
+
+●辅助绘图
+
+$getlastpos(elem)
+	紧接在绘制图片函数imageabs, imageabs_rc之后，取得实际画面中图像的描绘坐标。
+	同时，要取得measurestring的结果时也可以使用。
+	在设定了mempos的drawstring函数之后也可以取得坐标。
+
+   	elem - 设定想要取得的要素。
+		x :  left
+		y :  top
+		w :  width
+		h :  height
+		r :  right
+		b :  bottom
+
+	例:  
+		$setworldtransform(2)
+		$puts(img_path,C:\%album%.jpg)
+		$imageabs(10,4,100,100,$get(img_path),top noexpansion,)
+		$imageabs($getlastpos(x),$getlastpos(b),$getlastpos(w),20,$get(img_path),top nokeepaspect,6)
+		$gradientrect($getlastpos(x),$getlastpos(y),$getlastpos(w),$getlastpos(h),%el_backcolour%-128,%el_backcolour%-255)
+		$setworldtransform(0)
+
+
+$measurestring(text,x,y,W,H,OPTIONS)
+	使用$drawstring绘制字符串的情况下计算文字的显示范围。
+	结果返回值为显示范围的水平宽度。
+	可以使用$getlastpos取得显示范围的各项参数。
+
+	不过要注意计算结果可能比实际绘图结果大上一些。
+
+	OPTIONS - 参考$drawstring
+
+
+$measurestring2(text,x,y,W,H,OPTIONS)
+	使用$drawstring绘制字符串的情况下计算文字的显示范围。
+	结果返回值为显示范围的水平宽度。
+	返回值比$measurestring更精确。
+
+	* NOTE * this function maybe calculates a more accucurate measurement than $measurestring
+
+$getimagewidth(path), $getimageheight(path)
+	在path指向的图片被$imageabs $imageabs_rc读入内存并且在内存中并缓存之后，
+	返回重新调整尺寸后的宽和高。
+
+	●特别注意
+	只能使用在$imageabs $imageabs_rc之后。
+	对那些使用nokeepaspect的图片说不定可以用这个来计算宽高比？
+
+
+$setcoordinate(mode)
+$setcoordinate(0,X,Y,W,H)
+$setcoordinate(1,X,Y,R,B)
+	把绘图函数中已经设定好的的坐标参数 "(x,y,w,h)"，变换成(x,y,right,bottom)的样式。
+	但是对$imageabs_rc和$drawtriangle是没有效果的。
+	同时，假如设置了X,Y,W,H的话，绘图函数的坐标省略的时候默认的坐标就是设定的XYWH的值。
+	但是对$imageabs，$imageabs_rc和$drawtriangle是没有效果的。
+
+	mode : 坐标设置模式
+		0    默认  (x,y,w,h)
+		1    (x,y,right,bottom)
+
+(x,y)<------w------->
+|----------------|
+|	|
+h|	|
+|	|
+|________________| 
+                    (right,bottom)
+
+
+$setworldtransform(mode)
+	变换坐标系。
+	变换坐标系以后，不是全体都会受到影响。
+	在Group全组和多个音轨行绘图的时候应该会方便不少。
+	尤其是在绘制图片的时候。
+	不能在Popup中使用。
+	(例子可以参考默认的初始TF。)
+
+	mode 
+		0:默认
+			每音轨行的原点(x,y)=(0,0)是每行左上角的一点。
+
+		1: group统一坐标系
+			Group与每音轨行的原点(x,y)=(0,0)是Group行（分组标题）的左上角一点。
+			这时候%el_height% = (%el_item_count2% + %el_group_row%) * %el_row_height%。
+
+		2:item list统一坐标系
+			每音轨行的原点(x,y)=(0,0)是同分组第一音轨行左上角的一点。
+			这时候%el_height% = %el_item_count2% * %el_row_height%。
+
+default
+  (0,0)
+     |----------------|
+     |________________| 
+                    (el_width,el_height)
+
+group 统一坐标系
+  (0,0)
+     |----------------|
+     |  group header  |
+     |----------------|
+     |----------------|
+     |----------------|
+     |----------------|
+     |________________|
+                    (el_width,el_height)
+
+item list统一坐标系
+     |----------------|
+     |  group header  |
+(0,0)|----------------|
+     |----------------|
+     |----------------|
+     |----------------|
+     |________________|
+                    (el_width,el_height)
+
+
+$enabledraw(mode)
+	控制绘图函数($draw**** 和$imageabs**)是否有效。
+	这个函数出现一次之后直到下一次出现前绘图状态都不会改变。
+	主要是控制empty行中的绘图功能。
+
+	mode
+		0: 绘图函数无效
+		1: 有效
+
+	例: $enabledraw(1)
+	    $enabledraw(%el_is_valid%)
+
+
+$getsyscolour(index)
+	将系统颜色以r-g-b形式返回。
+
+	index:[0-30] 系统颜色的索引编号[我又糟糕了~大家可以看看注册表里面的Current user主键]
+
+
+$averagecolour(colour1,colour2[,…])
+	平均计算r-g-b-a形式的颜色值。
+	(colour1 + colour2 +…)/N
+
+
+$blendcolour(colour1,w1,colour2,w2,[,…])
+	加权（宽度比重）平均r-g-b-a形式的颜色值。
+	(w1*colur1 + w2*colour2 + … + wN * colourN)/ (w1 + w2 + … + wN)
+
+
+$addcolour(colour1,colour2[,…])
+	把r-g-b-a形式的颜色加起来。
+	colour1 + colour2 + … + colourN
+
+
+$subcolour(colour1,colour2[,…])
+	把r-g-b-a形式的颜色相减。
+	colour1 - colour2 - colour3 - … - colourN
+
+
+$xorcolour(colour1,colour2[,…])
+	对r-g-b形式的颜色进行XOR计算。alpha值会保留为colour1的alpha。
+	colour1  xor  colour2  xor  colour3  …  xor  colourN
+
+
+
+●通用函数
+	基本上[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]中有效。
+
+$getgroupformat(group_index)
+	返回由group_index指定的分组格式化TF处理结果。
+	group_index : 指定的分组是第几个(从0数起)。
+	有如下关系：%el_group_format% = $getgroupformat(%el_total_group_index%)。
+
+
+$findfile(path,[path2,path3,...])
+	path(可以使用通配符)指向的文件假如存在，返回第一个找到的文件路径。
+	假如没有找到的话返回false。
+
+
+$el_scale(val,factor[,DIV])
+	返回val * factor/100 或者 val * factor / DIV。
+	val和factor太大的话会溢出。
+
+
+
+●GDI系绘图函数
+	使用GDI进行绘图。因为简单，所以处理速度快。
+
+$drawtext(text,x,y,W,H,r-g-b,OPTIONS)
+	GDI绘制字符串函数
+	将文本（text）在坐标(x,y)处输出
+
+	OPTIONS
+		left hcenter right       水平对齐方式
+		top  vcenter bottom      垂直对齐方式
+		noclip                  不进行裁切
+
+
+$drawtextex(text,x,y,W,H,r-g-b,OPTIONS)
+	GDI绘制字符串函数~增强版
+	将文本（text）在坐标(x,y)处输出
+
+	OPTIONS
+		left hcenter right       水平对齐方式
+		top  vcenter bottom      垂直对齐方式
+		noclip                  不进行裁切
+		wrap                     允许换行缩进(不可与vcenter，bottom同时设定)
+		end_ellipsis             文本要被裁切的情况下，将被裁切部分更换为…
+	
+	例: $drawtextex(text,0,0,%_width%,%_height%,0-0-0,hcenter vcenter end_ellipsis)
+
+
+$gettextwidth(text, [FONTNAME, SIZE, OPTIONS])
+	返回使用GDI(drawtext,drawtextex)绘制的文本（text）的宽。
+	可以设置字体(详细设定参考$font)。当然也可以省略
+
+
+$gettextheight([ FONTNAME,SIZE,OPTIONS] )
+	返回使用GDI(drawtext,drawtextex)绘制的文本（text）的高。
+	可以设置字体(详细设定参考$font)。当然也可以省略
+
+
+$fillrect(x,y,w,h,colour,RESERVED)
+	填充一个矩形
+
+
+$fillroundrect(x,y,w,h,w2,h2,colour1,colour2)
+	填充一个圆角矩形
+
+
+
+
+■■■Popup系函数■■■
+[Popup(Background)], [Popup(Track)]中有效。
+
+$popupsize(w,h)
+	缩小弹出窗口的尺寸。
+	当然，
+		w < max size(width)
+		h < max size(height)
+	这两个条件是必须满足的。
+
+
+$popuphide()
+	不弹出窗口。
+	只有在被呼出的一瞬间才能确定不显示（也就是说之前的计算已经进行过了）。
+
+
+$popuptracknum(num)
+	最大音轨处理数减少到num个。
+	只在Popup(Background)中有效。
+
+
+
+[后话]: 函数中的颜色参数除了r-g-b-a形式以外$rgb(r,g,b)这样的应该也可以（好像是）。
+        同时（只限于）$drawtext函数的text参数部分中，使用$rgb或$transition函数可以设定颜色（应该是吧……）。
+
+==============================================================================
+
+
+●免責事項など
+このソフトウェアを使用したことによって生じたすべての損害?障害?権利侵害?不具合等に関して、ソフトウェア作者は、一切の責任を負いません。
+たとえバグがあったとしても、修正の義務を負いません。
+この事項に了承頂ける方のみ、各自の責任においてご使用ください。
+
+
+?本ソフトウェアには、下記の使用条件とともに配布されているソフトウェアの一部が含まれています。
+foobar2000 0.9.5 SDK
+  Copyright (c) 2001-2008, Peter Pawlowski
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
+  Neither the name of the author nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Columns UI SDK 6.3.1
+
+
+?ライセンスについて
+  Copyright (c) 2008, ssenna
+
+  バイナリ形式で再頒布する場合、頒布物に付属のドキュメント等の資料に、上記の著作権表示、本条件一覧、および下記免責条項を含めること。
+  書面による特別の許可なしに、本ソフトウェアから派生した製品の宣伝または販売促進に、著作権所有者または貢献者の名前を使用してはならない。
+
+  このソフトウェアは著作権所有者および貢献者により「現状のまま」提供されるものとし、商業的な使用可能性や特定の目的に対する適合性などの保証を含め、明示的暗黙的を問わず、いかなる保証もありません。
+  著作権所有者および貢献者は、事由の如何を問わず、損害発生の原因の如何を問わず、かつ責任の根拠が契約であるか厳格責任であるか（過失その他）不法行為であるかを問わず、仮にそのような損害が発生する可能性を知らされていたとしても、
+  このソフトウェアの使用から発生した直接損害、間接損害、偶発的な損害、特別損害、懲罰的損害、または結果損害（代替の物品やサービスの調達、使用機会やデータや利益の損失、業務の中断を含む、あらゆる損害）に対して一切責任を負いません。 
+
+
+
+==============================================================================
+
+
+
+change log
+v0.6.9.0b
+?1つのELPlaylistパネル内で、あるプレイリストから別のプレイリストへのドラッグ&ドロップが機能しないのを修正。
+?%el_ui_colour_xxx% と %el_ui_font_name% を追加。
+?$measurestring2 を追加。
+
+
+v0.6.8.0b
+?%el_system_date%追加
+?$albumart追加
+?いくつかの動作の変更
+?$albumart でtarget=1 が上手く動作しない場合があるのを修正(v0.6.8.1b)
+?Playlist filterでwildcard を使えるようにした(v0.6.8.1b)
+?$albumart でtarget=1 で埋め込み画像が表示できないのを修正(v0.6.8.2b)
+
+v0.6.7.0b
+?埋め込み画像などが、表示できなくなっていたので修正したつもり。
+?$imageabsの、artreaer_***のときに、画像が見つからなかった場合、stub画像を読み込むようにした。
+
+
+v0.6.6.5b
+foobar2000 v1.0のalbum art API対応。
+
+
+v0.6.6b
+? NowPlaying Playlistに追従するモードを追加。
+  ContextMenu->Playlists->Follow NowPlaying Playlist で設定。
+? %el_foobar2000_path% %el_user_profile_path%を追加。
+? プレイリストが切り替わった場合のスクロール位置の復元は、
+  前回表示したときの位置ではなく、単にフォーカスのあるトラック位置にスクロールするように仕様変更。
+? クリックアクションから、動的なコンテキストメニューが選択できないのを修正。
+? Follow NowPlaying Playlistの場合に、フォーカスに追従せずに再生トラックのみに追従するようにした。
+  また、Display only the focused groupがonの場合も再生トラックを含むグループを表示するようにした。
+  (v0.6.6.1b)
+?動的なコンテキストメニューで、GUIDが等しいコンテキストメニューがあると、上手く認識できないのを修正(v0.6.6.2b)
+?fontの設定処理まわりを修正(v0.6.6.2b)
+?前回の修正で、実行できない動的なコンテキストメニューができてしまったのを修正(v0.6.6.3b)
+?v0.6.6.2bから、$fontでの設定が効かなくなる場合があるのを修正(v0.6.6.4b)
+?トラックのフォーカスが移動したときに、表示範囲に入るようにスクロールするかどうか選択可能にした。
+ Behaviour-> Disable to follow the focused item(v0.6.6.4b)
+
+v0.6.5b
+?ActivePlaylistに追従するか否か、選択できるようにした。
+ ContextMenu->Playlists->Follow Active Playlist でon/off
+?細かい修正。
+?プレイリストを削除したときに、表示が狂うのを修正(v0.6.5.1b)
+?クラッシュすることがあるのを修正(v0.6.5.2b)
+?最新のSDKに更新(v0.6.5.2b)
+?終了時にスクロール位置を覚えるようにして、起動時にだいたいのスクール位置を復元するようにした。(v0.6.5.3b)
+?$imageabsで画像を別スレッドで読み込むようにした。(v0.6.5.3b)
+  nodelay optionで別スレッド読み込みはキャンセルできます。
+?$imageabsのartreader option向けに%el_group_first_path%追加。(v0.6.5.3b)
+?スクール位置の復元が上手くいかないケースがあるのを修正。(v0.6.5.3.1b)
+?delayのときwildcard無効になっていたのを修正。(v0.6.5.3.2b)
+?フォーカス関連の不具合修正。(v0.6.5.3.3b)
+?大きいプレイリストの処理速度を少し改善。(v0.6.5.4b)
+?キーボードショートカット処理の修正。(v0.6.5.5b)
+?キーボードショートカット処理の修正。(v0.6.5.5b)
+?リフレッシュコマンドをコンテキストメニューに追加。(v0.6.5.6b)
+?細かいバグ修正(v0.6.5.6b)
+
+v0.6.4b
+?click actionのSelect groupでグループを選択できるようにした。
+ (グループヘッダで%el_is_selected%が使えるようになった)
+?奇数?偶数行や、選択行などの背景色を指定できるようにした。
+?System colour mode-->enable Visual Styleに変更、および描画範囲指定追加、%el_is_themed%追加。
+?初期設定値の変更、enable Visual Styleを有効にしても変にならないように初期TFを更新。
+?Expand/Collapse all groupsで表示位置がずれてしまう問題の修正。(v0.6.4.1b)
+?初期TFの変更など、細かい調整。(v0.6.4.1b)
+?グループヘッダやempty行のクリックでフォーカスを移動させないオプションを追加。(v0.6.4.2b)
+?メニューの方のExpand/Collapse all groupsで表示位置がずれてしまう問題の修正。(v0.6.4.2b)
+
+v0.6.3b
+?VistaでSystem colour modeのときにリストの背景色を、エクスプローラのようなVisual Styleを適用するようにした。
+?$drawthemerectでエクスプローラのようなVisual Styleを描画できるようにした(Vistaのみ)。
+?マウスジェスチャで割り当てられるコマンドにSettingsを追加。
+
+
+v0.6.2b
+?foo_mouse_gestureと組み合わせてマウスジェスチャを機能を使えるようにした。
+?バグ修正など(v0.6.2.1b)
+?style presetの選択に関するバグ修正(v0.6.2.2b)
+?clickactionで実行できないコンテキストメニューがあったのを修正(v0.6.2.3b)
+?スクロールバーの表示など設定を変更してもすぐに反映されなくなっていたのを修正(v0.6.2.3b)
+?foo_mouse_gesture修正に対応 foo_mouse_gesture 0.2+ 必須(v0.6.2.4b)
+?ColumnsUI artwork viewのcurrent slection modeに対応(v0.6.2.4b)
+?v0.6.2.4からfoo_mouse_gestureがないと落ちる致命的なバグ修正(v0.6.2.5b)
+?設定ダイアログを整理した(v0.6.2.6b)
+?foo_mouse_gesture修正に対応 foo_mouse_gesture 0.3+ 必須(v0.6.2.7b)
+?グループの数が少なすぎる場合collpase all groups when playlist is changedを無効にできるようにした(v0.6.2.8b)
+?foo_mouse_gesture 0.4+対応(v0.6.2.8b)
+
+v0.6.1b
+?empty行にもclick actionを割り当てられるようにした。
+?5ボタンマウスの第4、第5ボタンにもclick actionを割り当てられるようにした。(5ボタンマウスがないので動作未確認)
+ v0.6.1.1b
+ ?row heightをgroup by presetで設定できるようにした。
+ ?インクリメンタル検索時にconsoleでなくステータスバーに状態を出力するように変更。
+ ?enable playlist filterがonの場合、コンテキストメニューからgroup by presetを選択しても、選択したものが
+  有効にならない場合があるのを修正。
+ v0.6.1.2b
+ ?$imageabsのwildcardをオプションに変更した。
+ ?行ごとの描画の更新で、更新が上の行から順次に描画されるように変更していたのを、全体が更新されてから描画するように戻した。
+
+v0.6.0b
+?最新のSDKに変更。(v0.9.5+必須？)
+?グループヘッダのドラッグをサポート。
+?パネル外とのDrag&Dropをサポート。
+?埋め込み画像の表示に(多分)対応。(ただし低速???)
+?sort formatの追加機能。
+?プレイリストにトラックがないときにドラッグで追加できないのを修正(v0.6.0.1b)
+?clickactionでmainmenuコマンドが有効にならないバグを修正(v0.6.0.2b)
+
+v0.5.2b
+?インクリメンタル検索機能追加。
+?$findfileで複数パス指定可能にした。
+?$imageabsでワイルドカード使用可能にした。
+?ショートカットキー追加。
+ v0.5.2.1b
+ $drawblurrectが$fillrectになっていたのを修正。
+
+v0.5.1b
+?グループヘッダでも一応ポップアップできるようにした。
+?マウス停止で実行できることを選べるようにした。
+?$fillroundrect, ポップアップ系のフィールド、関数追加。
+ v0.5.1.1b
+ ?設定ダイアログ整理。
+ ?選択状態が変更されても描画が更新されない場合があったのを修正。
+ ?初期TFを少し変更。
+
+v0.5.0b
+?ポップアップ機能追加。
+
+v0.4.5b
+?%el_is_hide_item%(--> %el_is_collapsed%に変更予定)をgroup rowでも使えるようにした。
+?gradientrectのオプションを追加。
+?playlist filterの検索順序の仕様を変更。
+?少し処理効率を上げたつもり。
+
+v0.4.4b
+?drawstringの仕様、特にglow系の仕様を変更。
+?TFの処理を少し軽くしたつもり。
+?描画TFも複数保存できるようにした。
+?drawstringでnoaaなどが効かなくなっていたのを修正(v0.4.4.1b)
+?設定ダイアログで reset すると 設定が壊れるバグを修正(v0.4.4.2b)
+?細かいバグ修正(v0.4.4.3b)
+
+v0.4.3b
+?グローバル変数代わりの置換機能を追加。あくまでTF処理前に置換するだけです。
+?初期TFを大幅に書き直した。
+?$imageabs, $imageabs_rcにglowオプションを追加
+?$drawblurrect関数追加
+
+v0.4.2b
+?細かいバグ修正
+?仕様の整理
+ レガシーな %_width% など "el" で始まらないフィールドを使えなくしました。
+
+v0.4.1b
+?設定変更直後に%el_preset_name%が不正になる場合があったのを修正。
+?設定変更直後にもplaylist filterを行うようにした。
+?$drawstringのオプションを追加。(最後を???に置き換えなど)
+?$measurestring追加。
+ v0.4.1.1b
+ ?トリッキーなグループ構造を指定されたときのレアケースにおきるバグ修正。
+ v0.4.1.2b
+ ?pseudo transparentのときの再描画制御を少し変更。
+
+
+v0.4.0b
+<機能追加>
+?group formatの設定などを複数持てるようにした。
+ また設定をコンテキストメニューから切り替えられるようにした。
+?コンテキストメニュー追加した。また各項目を非表示にできるようにした。
+<バグ修正>
+?プレイリスト切り替え時にスクロール位置を可能なら復元するようにした。
+?Toggle Selectionをmiddle clickに限定した。
+<仕様変更>
+?ダミートラック行の描画をデフォルトoffにした。つまり暗黙的に $enabledraw(%el_is_valid%) 状態ではじまる。
+  ダミートラック行で描画したい場合は $enabledraw(1) などで明示的にonにする必要がある。
+?ダミートラック行では、click actionが起動しないようにした。
+
+
+v0.3.3a
+?$getlastpos関数追加。
+?クリックアクションで選べる項目を増やした。mainmenuとcontextmenuを選べるようにした。
+ contextmenuの場合 グループに含まれるトラックが対象になります。
+?drawrectで枠を描画する場合の座標の仕様を変更した。
+ v0.3.3.1a
+ ?サブグループ化の際にダミーでいれるグループ行が不必要な場合にも入ってしまうのを修正。
+ ?ダミーでいれるグループ行で、%el_is_empty%が1を返すようにした。
+ v0.3.3.2a
+ ?アイテムを隠している場合、選択状態の表示の更新がされない場合があるのを修正
+ ?auto collapse時のグループ開閉の伴って表示位置がずれないように修正
+
+
+
+v0.3.2a
+?drawthemerect, drawfocusrect関数 追加
+?追加     %el_total_group_count%,%el_total_group_index%,
+ 仕様変更 %el_group_count%, %el_group_index%,
+ 削除     %el_subgroup_index%
+ v0.3.2.1a
+  ? v0.3.1aからclear cacheが効かなくなっていたのを修正。
+  ? サブグループがある場合にも アイテムを隠す動作に対応
+  ? クリック時の動作や、フォーカスの移動の仕方を内部処理的に大幅に変更
+ v0.3.2.2a
+  ? 無駄な再描画が行われていたのを修正。(少しは軽くなったかも)
+  ? v0.3.2.1aでショートカットキーが上手く動作しなくなる場合があったのを修正。
+ 
+ v0.3.2.3a
+  ? プレイリスト切り替えたときに表示する位置の仕様をとりあえずv0.3.2a以前と同じにした。
+ v0.3.2.4a
+  ? v0.3.2.1aから単独のキー入力でリスト先頭に戻ってしまうのを修正。
+ v0.3.2.5a
+  ? v0.3.2.1aからPageDown/PageUp/Home/Endが効かなくなっていたのを修正。
+  ? Ctrl-aで全選択追加
+  ? サブグループを持つグループのヘッダでclick actionのselect itemsしたときに
+    サブグループのアイテムを選択できないのを修正。
+  ? 地味に最適化
+
+
+v0.3.1a
+?%el_subgroup_count2%、%el_subgroup_index% 追加
+?設定画面をタブ化
+?reset/import/export機能追加
+?サブループが存在する場合に%el_item_count%、%el_item_count2%がサブグループのトラック数を返すようにした。
+
+v0.3.0a
+?入れ子状っぽくgroup行を挿入する機能追加。(%el_group_depth%, %el_subgroup_count%追加)
+?glowの仕様変更。
+
+v0.2.9a
+?Drag & Dropによるアイテムの移動の機能追加。
+ v0.2.9.1a
+   + single click actionを追加 + imageabs系に書庫内画像を表示する機能追加(一般に書庫の展開は非常に低速です)。
+ v0.2.9.2a
+   + gettextwidth, gettextheightにfont指定追加
+   + imageabsのnoexpansionが機能していなかったバグを修正。
+   + imageabsにiconファイルの読み込みオプションを追加。
+ v0.2.9.3a
+   + drawtextとdrawtextexでも使えないfontがあったのを修正したつもり。
+   + スクロールバーを消したときに横矢印で水平スクロールしてしまう挙動を変更。
+   + drawstringに実験的にglowオプションを追加。
+   + glowのパラメータ調整(v0.2.9.3.1aとv0.2.9.3.2a)
+ v0.2.9.4a
+   + drawstringにオプションを追加。
+   + glowをほんの少し高速化(v0.2.9.4.1a)
+ v0.2.9.5a
+   + drawstringにフォントを高品質で描画するオプションを追加
+
+
+v0.2.8a
+?ダミー行の制御でTitleFormat使用可とした。
+?%el_backcolour%追加。
+ v0.2.8.1a
+   + ダミー行のバグ修正
+ v0.2.8.2a
+   + sortの仕様変更
+   + %el_group_format%, $getgroupformatを追加。
+
+
+v0.2.7a
+?フォーカスしたグループだけ表示するモード追加。
+ 他グループ間の移動は他のプレイリストでやってください。
+ (例えばGraphical Browserとか)
+ v0.2.7.1a
+ + pseudo transparentでの高さの制限をなくした。(XPだけかも)
+ + "hide header when there is only one group"を削除
+ + "hide all items when..."にauto-collapseオプションを追加。
+ v0.2.7.2a
+ + group rowで拡張フィールドの使用を可能にした。
+   "hide header when there is only one group" option の代わりは group row: $ifequal(%el_group_count%,1,0,3)
+   とかで対応してください。
+ v0.2.7.3a
+ + hideされたアイテムの選択状態の動作を変更。
+ + スクロールバーの表示/非表示、スクロール量 設定を追加
+ v0.2.7.4a
+ + スクロールバーが常に表示と非表示のときに、プレイリスト切り替えでのちらつきをできるだけ抑えるようにした。
+ + メインメニューコマンドを追加。
+ v0.2.7.5a
+ + display only the focused group で落ちる場合があったのを修正
+
+
+v0.2.6a
+?ショートカットキーの追加と削除。
+ Ctrl-c(Copy), Ctrl-v(Paste), Ctrl-x(Cut)追加。
+ メディアキー系の操作を削除
+?コンテキストメニューにPlaylistの選択を追加。
+?drawetextexで、&が扱えないバグを修正。
+?drawtriangle関数追加
+ v0.2.6.1a 
+ + imageabsに画像を透明度を指定する引数追加
+ + トラックのメタデータが変更されたときに、リストを初期化するのをやめた。
+ v0.2.6.2a
+ + imageabs_rcに画像を透明度を指定する引数追加
+ + %el_group_index%, %el_group_count%を追加。
+ + プレイリスト内のトラック数が少ないときの 擬似背景透過モードのときの挙動を少し改善。
+  **  pseudo trasnparaent mode currently requires that the height of ELPlaylist is integer multiples of row height **
+ v0.2.6.3a
+ + Per Trackがうまく働かない場合があったのを修正。
+
+v0.2.5a
+?group rowにtitleformat適用可能にした。0設定も可能。
+?Alt + 上下キーで、選択アイテムの移動をできるようにした。
+?pseudo transparent時のスクロールしたとき背景も一緒にスクロールしてしまう挙動を修正(したつもりだがどうでしょう？)
+?%[el]_is_hide% --> %[el]_is_hide_item%に変更。(しばらく%_is_hide%も使えます。)
+  v0.2.5.1a
+  + metadb_handle leakしてそうなところを修正。
+  + hide items which have no group headerが保存されないバグ修正
+
+
+v0.2.4a
+?クリックアクションをちょっとだけ追加。
+?指定item数に満たない場合、ダミー行を入れる機能追加。
+?グループが一つしかなかった場合にグループヘッダを表示しないオプションを追加。
+?実際の行の高さが、row height指定の値+1 になっていたのを修正。
+?Per Secondの負荷をかなり減らした。
++ デフォルトでitem listをhide状態にできるオプションを追加。
+  imageabsを使っている場合、少し注意が必要かも。
++ GDIテキスト系関数追加。
++ Groupのclick actionに先頭トラックの再生を追加。
++ TFフィールドを追加+GroupヘッダTFでも%el_isplaying%を使えるようにした。
+
+v0.2.3a
+?背景透過をGroupにまで拡張
+?矩形グラデーション関数追加
+?Per Second追加。
+ 初期TFも更新。
+ + パネルサイズを変更したときにGroupヘッダの背景透過がずれることがあったのを修正。
+ + 再生トラックが変わったときに描画がおかしくなるのを修正。
+ + 他のプレイリストと同期しない場合があったのに対応。
+ + すべてアイテムを選択状態から、一つに選択しなおした場合、
+   更新するまでにやたら時間がかかるのを修正したつもり。
+
+v0.2.2a
+?座標設定関数setworldtransform関数追加。
+ (画像を表示しやすくなると思う)
+?sortを有効にするかどうか選択できるようにした。
+?細かいバグ修正
+
+v0.2.1a
+?Applyボタンのバグ修正
+
+v0.2a
+?テキスト描画関数のアライン設定など追加。
+?背景色指定追加。
+?トラック行のみ擬似的な背景透過を可能にした。ただしWindowsXPのみ。
+ もしかしたらWindows2000だと起動しないのかも。
+?種々のバグ修正。
+
+v0.1a
+?公開版(+ title formatが書きかけだったのを追記)
+
+
+
+===========================================
+Appendix[附录]
+分组构成的限制
+像下面这样分组下面带有子分组和音轨的样式是不行的。
+group1
+  |-group2
+  |   |-track1
+  |   |-track2
+  |
+  |-group3
+  |   |-track3
+  |   |-track4
+  |   |-track5
+  |
+  |-----track6
+  |-----track7
+
+在这种情况下，上面的结构会变成下面这样（增加一个dummy组来收纳那些单独的音轨）。
+group1
+  |-group2
+  |   |-track1
+  |   |-track2
+  |
+  |-group3
+  |   |-track3
+  |   |-track4
+  |   |-track5
+  |
+  |-group4(dummy)
+  |   |-track6
+  |   |-track7
+
+
+本文档基于ELplaylist0.6.9.0b编写，neonasahi翻译；原版权归ssenna所有
+这是本文档的第一次更新
+
+更新了field域中的%el_colour_...%系列
+添加了$albumart和$measurestring2函数的说明
+
+本文档会随着ELP的更新不断更新，请不时前往相关发布帖查看。
+
+文中会有几处不当措辞，不过应该不影响阅读？
+要想完全掌握PSS和ELP还需要拥有熟练的TF知识。
+
+neonasahi Aug.2 2010 @Shanghai
