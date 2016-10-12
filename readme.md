@@ -1,47 +1,55 @@
-#ELplaylist 教程（一）
+---
+date: 2016-10-11 22:57
+status: public
+title: 2016-10-11
+---
+
+#ELPlaylist 教程（一）
 
 ##前言
 
-Elplaylist 是由 **ssenna** 写的一个高级播放列表插件，作者 ssenna 是一个日本人，他（她）同时也是*面板栈分离器*、*albumlist*等插件的作者，而这几个插件可以说是 fb2k界面配置中使用率最高的几个插件了，可以说 90% 的 fb2k 配置都是 cui + elp+ pss 为主的。直到这两年，用 wsh playlist 去代替 elplaylist的配置才稍微多一点，而 wsh playlist的修改难度可以说非常非常大，而原创一个 wsh playlist简直逆天。相比之下，elplaylist的功能强大，配置也算比较灵活，并且由于其配置脚本是 title formatting形式的，title formatting（标题格式化脚本）的难度就很一般了，完全可以拿到台面上来讲。
+ELPlaylist 是 foobar2000 的高级播放列表插件，相比于 DUI 或 CUI 自带的播放列表，ELPlaylist 更加强大，自定义自由度也更高。也因此，各位看到的许许多多花哨的 foobar2000 皮肤都是使用的 ELPlaylist 作为列表组件，比如各位熟悉的 Jensen&dreamXis 的 **shutter** 和 **eiko**。
 
-本人（百度ID：Elia\_is\_me）早前曾经做过一个 elplaylist 的教程，尽管仓促却也够详细，不过后来 ID 被封帖子也不再可见，去年（2013年）还能找到网页快照，今年则完全无影无踪了，所以顺便就重写一个。为了防止再次因为ID 被封导致帖子找不到，所以这次会保留离线版，可能还会上传到 GitHub上，被删的风险应该没有了。
+> ELPlaylist 作者是 **ssenna**, 对于他我并没有太多了解，只知道他留下了诸多的插件，诸如`面板栈分离器`、`专辑列表`、`ESPlaylist`等等。如果你熟悉 foobar2000 的各种皮肤就应该知道这些插件是多么有用。
 
-教程预计主要为两个部分：（一）为设置界面的介绍以及一些常规设置；（二）则主要介绍脚本。教程的目的不是为了教你做出多么多么漂亮的界面，而是告诉你elplaylist的配置的方法，这样当你有想法的时候可以随时参考做出适合你自己的界面出来。**要注意的是elplaylist 的界面配置的难度可能是仅次于 wsh panel mod 和面板栈分离器的**，所以如果一遍没看懂什么的很正常，多看几遍，多练习是关键。如果仅仅抱着*“花几分钟时间做出个漂亮的界面”*的心态的话，可能 elplaylist 不适合你。
+教程预计主要为两个部分：
+* （一）为设置界面的介绍以及一些常规设置；
+* （二）主要介绍脚本。
 
-为了简便起见，下面的内容中可能会出现一些缩写，提前列出：
+此篇教程不打算介绍如何设计界面，只是简单介绍一下 ELPLaylist 的用法和脚本编程。ELPlaylist 的脚本并不复杂，但考虑到许多 foobar2000 用户并没有编程的基本知识，所以还是需要有面对困难的打算。
 
-> * elp : Elplaylist （Elplaylist 播放列表）
-> * cui : Column UI （分栏界面）
-> * fui : Func UI 
-> * pss : Panel Stack Splitter （面板栈分离器）
-> * wshm : Wsh Panel Mod （Wsh 面板改进版）
-> * tf : title formatting（标题格式化脚本语言）
+> 为了方便，本文会使用一些缩写代替全拼：
+> * ELP => ELPlaylist
+> * CUI => Columns UI: 分栏界面
+> * WSHMP => WSH Panel Mod (Plus): WSH 面板插件及各种衍生插件
+> * PSS => Panel Stack Splitter: 面板栈分离器插件
+> * TF => Title Formatting: 标题格式化脚本
+
 
 ##准备工作
 
-ELP 只能在 CUI 界面下使用（FUI未知），所以如果要用 elp 的话首先需要对 cui 有些了解才行，所以先贴两个 CUI 的教程，这样你才能把 elp 面板放到 cui 界面上：
+ELP 只能在 CUI/FUI 界面下使用，所以如果要用 ELP 的话首先需要对 CUI 有些了解，可以看看前人写的一些教程：
 
 > * [Wosgar：Foobar2000音乐播放器教程（三）—— 皮肤修改](http://tieba.baidu.com/p/2711054973)
 > * [伏天：【初级教程-界面】--简单分栏用户界面（CUI配置）的制作--](http://tieba.baidu.com/p/2093606833)
 > * [伏天：【进阶教程-界面美化】----分栏用户界面CUI的制作与修改](http://tieba.baidu.com/p/2237071201)
 
-本人会给出一个练习用的懒人包，里面精简了不需要的插件，仅保留练习所需要的插件，不能播放无损音乐，不适合日常使用，请注意。
+本人会给出一个练习用的懒人包，里面精简了不需要的插件，仅保留练习所需要的插件，不能播放无损音乐，不适合日常使用，还请注意。
 
 > * [下载地址](http://pan.baidu.com/s/1gd7qkpl)
 
-其次，elp 的配置脚本是 **tf 语言**，所以如果要给 elp 写脚本，必须对 tf有一定的了解。Tf使用起来非常非常简单，只有**字段**和**函数**两种数据类型，tf 的帮助在fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
+其次，ELP 的配置脚本是 **TF**，所以如果要给 ELP 写脚本，必须对 TF 有一定的了解。TF 使用起来非常非常简单，只有**字段**和**函数**两种数据类型，TF 的帮助在fb2k `主菜单：帮助 > 标题格式帮助` 可以找到。
 
-最后，elp 的[英文帮助说明文件](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components_0.9/ELplaylist_panel_%28foo_uie_elplaylist%29)，
-懂英文的话直接查询帮助会方便许多。
+最后，ELP 的[英文 Wiki](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components_0.9/ELplaylist_panel_%28foo_uie_elplaylist%29)，懂英文的话直接查询帮助会方便许多。
 
 
 ##设置界面
 
-设置界面调出方式很简单：`右键 > 设置`：
+首先调出 ELP 的设置界面：`右键 > 设置`：
 
 ![image](https://raw.githubusercontent.com/elia-is-me/ELPlaylist-Tutor/master/images/img-1.png)
 
-会看到设置界面有**五个**主标签页：`脚本`、`样式`、`分组`、`字段定义`、`行为`、`杂项`。ELP 的全部设置都在这五个标签页下面，下面会分别介绍这五个标签页下的设置选项。因为本教程设定为写给初学者的参考教程，所以可能有些设置会被省略。不要紧的，等你需要用那些设置选项的时候你应该对设置 elp 很熟悉了。
+会看到设置界面有**五个**主标签页：`脚本`、`样式`、`分组`、`字段定义`、`行为`、`杂项`。ELP 的全部设置都在这五个标签页下面，下面会分别介绍这五个标签页下的设置选项。因为本教程设定为写给初学者的参考教程，所以可能有些设置会被省略，有兴趣可以自己探索。
 
 ###“脚本”：
 
@@ -52,7 +60,7 @@ ELP 只能在 CUI 界面下使用（FUI未知），所以如果要用 elp 的话
 * 点`新建`按钮就会新建脚本，新建的脚本内容会与你当前脚本的内容完全相同；
 * 通过下拉选项切换到你想重命名的脚本名，重新输入新的脚本名，然后点`重命名`就会更新当前脚本的名称；
 
->如果你不理解我上面说的是什么，那么你就照着我说的去操作几次，应该就能理解我的意思。这句话我后面不再加，但希望你记住。
+> 自己操作看看。
 
 在界面最下排，有一排按钮，其中：
 
@@ -66,7 +74,7 @@ ELP 只能在 CUI 界面下使用（FUI未知），所以如果要用 elp 的话
 
 ![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-2.png)
 
-这里是设置界面颜色、外观等的地方。在这里`边缘样式`、`仿真透明`、`滚动条`的设置不会被`脚本`设置覆盖，而`背景颜色`、`外观样式`则可能被脚本里的设置覆盖掉，比如你在脚本里如果也设置了背景色之类的东西，那么在这里的设置就无无效了。
+这里是设置界面颜色、外观等的地方。注意`自定义背景颜色`下面的各个选项都可能被脚本覆盖。而有经验的人通常也不在这里设置颜色，而直接在脚本里设置。
 
 给一张设置的效果示意图：
 
@@ -76,7 +84,7 @@ ELP 只能在 CUI 界面下使用（FUI未知），所以如果要用 elp 的话
 
 **滚动条**的显示/隐藏在滚动条后面的下拉菜单设置。
 
-再次强调：这里面无论是`默认字体`，还是`自定义背景颜色`，还是`外观样式`都被脚本所替代，所以这里你可以只设定`边缘样式`，`仿真透明`和`滚动条`，怎么方便就怎么来。
+再次强调：这里面无论是`默认字体`，还是`自定义背景颜色`，还是`外观样式`都可能被脚本所替代，所以这里你可以只设定`边缘样式`，`仿真透明`和`滚动条`，怎么方便就怎么来。
 
 ###“分组”（重要）
 
@@ -103,7 +111,7 @@ ELP 只能在 CUI 界面下使用（FUI未知），所以如果要用 elp 的话
 
 1. `分组格式`就填上面提到的那些，`排序格式`看情况填。
 
-1. `行高`：elp 中每首歌占一行，每一行的高度在这里定义。
+1. `行高`：ELP 中每首歌占一行，每一行的高度在这里定义。
 
 1. `分组行数`：`分组行高 = 分组行数 * 行高`。这里可以是一个固定的数字，比如`4`，也可以加一个判断语句：`$if(%el_is_collapsed%,3,4)`, 比如这个例子表示当分组折叠起来的时候，分组行高就就变成`3 * 行高`了，如图示：
 ![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-6.png )
@@ -123,19 +131,19 @@ ELP 只能在 CUI 界面下使用（FUI未知），所以如果要用 elp 的话
 
 这样做的目的并不是为了让你少打几个字，尽管可能有这个作用。真正的目的是为了让脚本更加好读懂，
 
-字段可以是数字、字符串甚至是 tf 函数。
+字段可以是数字、字符串甚至是 TF 函数。
 
 ![image](https://raw.github.com/elia-is-me/ELPlaylist-Tutor/master/images/img-8.png)
 
 ###“行为”
 
-这里是 elp 的一些行为的地方，选项很多但大部分不需要修改。
+这里是 ELP 的一些行为的地方，选项很多但大部分不需要修改。
 
 1. 点击操作：默认就行了，不要改，基本不需要。
 
 1. 鼠标悬停操作：启用的话当鼠标悬停在曲目行是会弹出一个歌曲信息的界面。
 
-1. 每秒更新一次：如果你希望列表播放时显示一些动态的内容的话，比如**播放进度**之类的，你可以勾选上，这个是会消耗 cpu 资源的，根据自己电脑量力而行。当然 elplaylist 效率相当高，勾选上基本没事。
+1. 每秒更新一次：如果你希望列表播放时显示一些动态的内容的话，比如**播放进度**之类的，你可以勾选上，这个是会消耗 cpu 资源的，根据自己电脑量力而行。当然 ELP 效率相当高，勾选上基本没事。
 
 1. 调整质量：默认就行。
 
@@ -154,39 +162,38 @@ ELP 只能在 CUI 界面下使用（FUI未知），所以如果要用 elp 的话
 
 ## 结语
 
-*教程（一）*就到这里，主要就是介绍 elp 的设置界面。还是有点复杂的，新手可能一开始看不懂，所以多看几次，不光是教程，还有实例。多看多试几遍后就应该知道怎么回事了。
+*教程（一）*就到这里，主要就是介绍 ELP 的设置界面。还是有点复杂的，新手可能一开始看不懂，所以多看几次，不光是教程，还有实例。多看多试几遍后就应该知道怎么回事了。
 
-不要没有耐心，如果你真的要自己做一个 elp 的样式的话，看我的教程是不够的，英文的说明文档也是必看。[foobar2000 中文论坛](http://www.foobar2000.com.cn) 还有**neon**的[翻译文档](http://www.foobar2000.com.cn/read.php?tid-17159.html)，不过他（她）设置了回复可见，而论坛又不准回复……不过好在 **Asion** 那儿有，所以让他给我传了一份，我附在文章的结尾了[1]。
+不要没有耐心，如果你真的要自己做一个 ELP 的样式的话，看我的教程是不够的，英文的说明文档也是必看。[foobar2000 中文论坛](http://www.foobar2000.com.cn) 还有**neon**的[翻译文档](http://www.foobar2000.com.cn/read.php?tid-17159.html)，不过他（她）设置了回复可见，而论坛又不准回复……不过好在 **Asion** 那儿有，所以让他给我传了一份，我附在文章的结尾了[1]。
 
 话说回来，如果有兴趣的话，多看几遍又何妨？本人对 Jscript 一窍不通，看了一遍又一遍的 wsh 文档，终于还不是“七窍通了六窍”？
 
 ## 注解
 
-Elp 自带的字段和函数都没有介绍，虽然文档中有，但在这篇教程中有用到的话，就加点说明在这里吧：
+ELP 自带的字段和函数都没有介绍，虽然文档中有，但在这篇教程中有用到的话，就加点说明在这里吧：
 > * %el_is_collapsed%: 判断分组是不是折叠起来的，仅仅在`分组标题`和`分组行数`中有用。
 > * %el_width%: 返回行宽，在`音轨列表`、`分组标题`、`每秒更新`、`悬停`中可用。
 > * %el_height%: 在“脚本”标签页下的各个标签页都可用，举例说明：
 ```
  `行高`设为28，`分组行数`设为 3 的话，那么在各个标签页下：
  默认或者 $setworldtransform(0) 时：
- `音轨列表`中，`%el_height% = 28
- `分组标题`中，`%el_height% = 28 * 3
+ `音轨列表`中，`%el_height% => 28
+ `分组标题`中，`%el_height% => 28 * 3
  如果 `$setworldtransform(1)` 时：
- `%el_height% = (%el_item_count2% + %el_group_row%) * %el_row_height%`
+ `%el_height% => (%el_item_count2% + %el_group_row%) * %el_row_height%`
  如果 `$setworldtransform(2)` 时：
- `%el_height% = %el_item_count2% * %el_row_height%`
+ `%el_height% => %el_item_count2% * %el_row_height%`
 ```
 
 > * %el_row_height%: 行高
 > * %el_item_count2%: 列表中非空的行数（英文文档似乎有误）
 
 ##参考资料
-1. Elp 文档 翻译 by neon):
+1. ELP 中文文档 by neon):
   https://raw.githubusercontent.com/elia-is-me/ELPlaylist-Tutor/master/text-files/elp_chs.txt
 1. Wiki: [Foobar2000:Components 0.9/ELplaylist panel (foo uie elplaylist)](http://wiki.hydrogenaud.io/index.php?title=Foobar2000:Components_0.9/ELplaylist_panel_%28foo_uie_elplaylist%29#.25el_height.25)
-1. Shutter by Jensen & dreamxis: [dreamxis 的博客地址](http://dreamxis.themex.net/709)
+1. Shutter(by Jensen & dreamXis): [dreamxis 的博客地址](http://dreamxis.themex.net/709)
 
 ## 鸣谢
 
-感谢 Asion 提供了 elp 的中文文档资料，感谢 neonasahi 的翻译工作，因为前人的努力，使得我工作轻松不少。
-
+感谢 Asion 提供了 ELP 的中文文档资料，感谢 neonasahi 的文档翻译。
